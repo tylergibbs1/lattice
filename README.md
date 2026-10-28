@@ -4,7 +4,24 @@
   <img src="public/latticehd.gif" alt="Lattice Demo" width="800">
 </p>
 
-A CLI tool that analyzes stocks through Charlie Munger's 28 mental models using 10 parallel AI agents.
+A CLI tool that analyzes stocks through Charlie Munger's 28 mental models using 10 parallel AI agents, then delivers a verdict in Munger's voice.
+
+## Quick start
+
+Requires [Bun](https://bun.sh) and an Anthropic API key.
+
+```bash
+git clone https://github.com/tylergibbs1/lattice.git
+cd lattice
+bun install
+bun run build
+bun link            # puts `lattice` on your PATH
+
+export ANTHROPIC_API_KEY="sk-ant-..."
+lattice
+```
+
+`lattice` opens an interactive menu. Pick **Analyze Stock**, choose a persona, and enter a ticker such as `AAPL`.
 
 ## Features
 
@@ -22,27 +39,30 @@ A CLI tool that analyzes stocks through Charlie Munger's 28 mental models using 
 - **Web Search** - Optional Exa AI integration for real-time market research
 - **Finviz Data** - Automatic scraping of fundamental and technical data
 - **Charlie's Verdict** - Final synthesis in Munger's voice with actionable rating
+- **Cathie Wood persona** - An alternative 10-agent lens on disruptive innovation (Wright's Law, S-curves, 5-year thinking) with verdicts from HIGH CONVICTION BUY to EXIT LEGACY or TOO EARLY
+- **Saved history** - Every analysis is saved to `~/.lattice/history/` and can be reopened
 
-## Installation
+## Usage
 
-```bash
-# Clone the repo
-git clone <repo-url>
-cd lattice
+Run `lattice` (or `bun run dev` from the repo) and pick an action:
 
-# Install dependencies
-bun install
+| Action | What it does |
+|--------|--------------|
+| Analyze Stock | Run full analysis with results |
+| Watch Analysis | Live dashboard showing all agents working |
+| View History | Browse past analyses |
+| View Saved | Open a saved analysis by ticker or ID |
+| Setup | Configure API keys |
+| Mock Demo | Preview the UI with sample data |
 
-# Build
-bun run build
-```
+Analyze, Watch and View then ask for a persona (Charlie Munger or Cathie Wood), a ticker, and whether to show verbose per-model detail. Analyses are saved to `~/.lattice/history/`.
 
 ## Configuration
 
-Run the interactive setup to configure your API keys:
+Pick **Setup** in the menu to configure your API keys:
 
 ```bash
-lattice setup
+lattice   # then choose Setup
 ```
 
 This will guide you through entering your API keys and save them to `~/.lattice/config.json`.
@@ -66,63 +86,16 @@ Or manually create the config file:
 }
 ```
 
-## Usage
-
-```bash
-# Analyze a stock
-lattice analyze AAPL
-
-# Watch mode - live dashboard showing all agents working
-lattice watch AAPL
-
-# Verbose mode - show detailed analysis per mental model
-lattice analyze AAPL --verbose
-lattice watch AAPL --verbose
-```
-
-### History
-
-Analyses are automatically saved and can be retrieved later:
-
-```bash
-# List all saved analyses
-lattice history
-
-# View a saved analysis by ticker (shows most recent)
-lattice view AAPL
-
-# View a saved analysis by ID
-lattice view abc123
-
-# View with verbose mode
-lattice view AAPL --verbose
-
-# Clear all saved analyses
-lattice history --clear
-```
-
-Analyses are saved to `~/.lattice/history/`.
-
-### Demo/Testing
-
-```bash
-# Mock analysis results for UI testing
-lattice mock
-
-# Demo the live agent dashboard with simulated activity
-lattice mock-watch
-```
-
 ### Debug Mode
 
 Enable verbose logging to troubleshoot issues:
 
 ```bash
 # Logs written to /tmp/lattice-debug.log
-LATTICE_VERBOSE=1 bun analyze AAPL
+LATTICE_VERBOSE=1 bun run dev
 
 # Custom log file
-LATTICE_DEBUG_FILE=/path/to/debug.log LATTICE_VERBOSE=1 bun analyze AAPL
+LATTICE_DEBUG_FILE=/path/to/debug.log LATTICE_VERBOSE=1 bun run dev
 ```
 
 ## Output
@@ -194,7 +167,7 @@ CLI Input (ticker)
   → Ink Render Output
 ```
 
-## Agent Distribution
+## Agent Distribution (Munger persona)
 
 | Agent | Mental Models |
 |-------|---------------|
@@ -226,7 +199,7 @@ lattice/
 │   ├── index.ts                    # Entry point
 │   ├── cli/
 │   │   ├── index.tsx               # CLI commands
-│   │   ├── commands/analyze.tsx    # Analyze command
+│   │   ├── commands/               # interactive menu, analyze, watch, history, view, setup, mock
 │   │   └── components/             # Ink UI components
 │   ├── agents/
 │   │   ├── orchestrator.ts         # Parallel execution
@@ -236,6 +209,7 @@ lattice/
 │   │   ├── finvizScraper.ts        # Finviz scraper
 │   │   └── types.ts                # TypeScript interfaces
 │   ├── models/mentalModels.ts      # 28 mental model definitions
+│   ├── personas/                   # Munger and Cathie Wood agent + synthesis configs
 │   ├── synthesis/finalAnalysis.ts  # Charlie Munger synthesis
 │   └── utils/
 │       ├── config.ts               # Config loader
@@ -243,6 +217,14 @@ lattice/
 ├── bin/lattice.js
 ├── package.json
 └── tsconfig.json
+```
+
+## Development
+
+```bash
+bun run dev         # run from source
+bun run typecheck
+bun run build       # compile to dist/
 ```
 
 ## License
